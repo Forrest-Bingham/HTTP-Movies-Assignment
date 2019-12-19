@@ -30,16 +30,18 @@ const UpdateMovie = props => {
       })
       .catch(err => console.log(err));
     
-  }, [props.update, props.match.params.id]);
+  }, [props.match.params.id]);
 
   const changeHandler = e => {
-    //   if(e.target.name === "stars")
-    //   {
-    //       setUpdate({...update, [e.target.name]:[...update.stars, e.target.value]})
-    //   }
-
-        setUpdate({ ...update, [e.target.name]: e.target.value });
-    
+    e.persist();
+      if(e.target.name === "stars"){
+          
+          setUpdate(update => ({...update,
+             [e.target.name]: e.target.value.split(",")}));
+      }
+        else {
+        setUpdate(update => ({ ...update, [e.target.name]: e.target.value }));
+        }
   };
 
   const handleSubmit = e => {

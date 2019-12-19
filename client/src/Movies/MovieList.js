@@ -17,12 +17,7 @@ export default class MovieList extends Component {
       .catch(err => console.log(err.response));
   }
 
-  // componentDidUpdate(){
-  //   axios
-  //     .get("http://localhost:5000/api/movies")
-  //     .then(res => this.setState({ movies: res.data }))
-  //     .catch(err => console.log(err.response));
-  // }
+  // componentDidUpdate()
 
   render() {
     return (
@@ -38,7 +33,7 @@ export default class MovieList extends Component {
 function MovieDetails({ movie }) {
   return (
     <Link to={`/movies/${movie.id}`}>
-      <MovieCard movie={movie}  />
+      <MovieCard movie={movie} />
     </Link>
   );
 }
