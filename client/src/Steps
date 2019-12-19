@@ -1,0 +1,106 @@
+1. in App, create a Route path to UpdateMovie
+
+    const [movies, setMovies] = useState([]);
+    <Route path='/update-movie/:id' render={props => <UpdateMovie {...props}movies={movies} setMovies={setMovies} />} />
+
+1.5 Create Edit button and path in Movie.
+
+    <button onClick={()=> this.props.history.push(`/update-movie/${this.state.movie.id}`)}>Edit</button>
+
+2. Create UpdateMovie component with form to edit
+
+    const UpdateMovie = props => {
+
+    const [movie, setMovie] = useState(initialMovie);
+
+    useEffect(()=> {
+
+    }, []);
+
+
+
+    return (
+        <div>
+            <form onSubmit>
+                <input 
+                    type="text"
+                    name="title"
+                    placeholder="Title"
+                    value=""
+                    onChange=""
+                    />
+
+                    <input 
+                    type="text"
+                    name="director"
+                    placeholder="Director"
+                    value=""
+                    onChange=""
+                    />
+
+                    <input 
+                    type="number"
+                    name="metascore"
+                    placeholder="Metascore"
+                    value=""
+                    onChange=""
+                    />
+
+                    <input 
+                    type="text"
+                    name="stars"
+                    placeholder="Stars"
+                    value=""
+                    onChange=""
+                    />
+
+                    <button type="submit">Submit</button>
+            </form>
+        </div>
+    )
+}
+
+export default UpdateMovie;
+
+3. set up state and create onChange/onSubmit functions
+
+    const initialMovie = {
+    title:'',
+    director:'',
+    metascore:'',
+    stars:[]
+    }
+
+    const handleSubmit = e => {
+    console.log("movie.id", movie.id)
+    e.preventDefault()
+    axios.put(`http://localhost:5000/api/movies/${movie.id}`, movie)
+    .then( res => {
+        console.log(res.data);
+        const updatedMovieList = props.movies.map(item => {
+            if(item.id === movie.id){
+                return item = res.data
+            } else {
+                return item
+            }
+        })
+        props.setMovies(updatedMovieList);
+    })
+    .catch(err => console.log(err));
+    props.history.push('/');
+}
+
+4. Create useEffect function to edit movie.
+
+     useEffect(()=> {
+
+        const editMovie = props.movies.find(
+            item => `${item.id}` === props.match.params.id
+        )
+
+        if(!editMovie){
+            return
+        } else {
+            setMovie(editMovie)
+        }
+    }, [props.movies, props.match.params.id]);
