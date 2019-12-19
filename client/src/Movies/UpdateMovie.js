@@ -1,99 +1,106 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import {rerender} from "../utils/rerender";
+const initialMovie = {
+  id: "",
+  title: "",
+  director: "",
+  metascore: "",
+  stars: []
+};
 
-export function UpdateMovie(props){
-    const [update,setUpdate] = useState({
-        id: '',
-        title:'',
-        director:'',
-        stars: [],
-    })
+const UpdateMovie = props => {
+  const [update, setUpdate] = useState(initialMovie);
 
-    const [starHandle, setStarHandle] = useState("");
 
-    useEffect(()=> {
-        rerender().get(`movies/${props.match.params.id}`)
-        .then(res => {
-            setUpdate(res.data)
-        })
-        .catch(err=> console.log(err))
-    }, [props.match.params.id])
+  useEffect(() => {
+      console.log("props.match.params.id", props.match.params.id)
+      console.log("update", update)
+      axios
+      .get(`http://localhost:5000/api/movies/${props.match.params.id}`)
+      .then(res => {
+        setUpdate(res.data);
+    //     const movieToEdit = props.movies.find(
+    //   e => `{e.id}` === props.match.params.id
+    // );
+    // console.log(props.movies, movieToEdit);
+    // if (movieToEdit) {
+    //   setUpdate(movieToEdit);
+    // }
+      })
+      .catch(err => console.log(err));
+    
+  }, [props.update, props.match.params.id]);
 
-    const handleChanges = e => {
-        e.persist()
-        let value = e.target.value
-        setUpdate({
-            ...update, 
-            [e.target.name]: value
-        })
-    }
+  const changeHandler = e => {
+    //   if(e.target.name === "stars")
+    //   {
+    //       setUpdate({...update, [e.target.name]:[...update.stars, e.target.value]})
+    //   }
 
-    // const handleChanges = e => {
-    //     e.persist();
-    //     if (e.target.name === "stars") {
-    //       setUpdate(prevData => ({
-    //         ...prevData,
-    //         [e.target.name]: e.target.value.split(",")
-    //       }));
-    //     } else {
-    //       setUpdate(prevData => ({ ...prevData, [e.target.name]: e.target.value }));
-    //     }
-    //   };
+        setUpdate({ ...update, [e.target.name]: e.target.value });
+    
+  };
 
-    return(
-        <form onSubmit={e=> {e.preventDefault()
-        rerender().put(`/movies/${update.id}`, update)
-        props.history.push('/')}}
-        >
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log("This is the put request", update)
+    axios
+      .put(`http://localhost:5000/api/movies/${update.id}`, update)
+      .then(res => {
+          console.log("res.data after put request", res.data)
+        // setUpdate(res.data)
+         console.log("stars", update.stars)
+         console.log("update.id", update.id)
+        props.history.push(`/movies/${update.id}`);
+      })
+      .catch(err => console.log(err));
+  };
+
+  return (
+    <div>
+      <h2>Update Movie</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          onChange={changeHandler}
+          value={update.title}
+        />
+        <div className="baseline" />
 
         <input
-            type="text"
-            name="title"
-            value={update.title}
-            onChange={handleChanges}
-            placeholder="Title"
-            />
+          type="text"
+          name="director"
+          placeholder="Director"
+          onChange={changeHandler}
+          value={update.director}
+        />
+        <div className="baseline" />
 
-            <input
-            type="text"
-            name="director"
-            value={update.director}
-            onChange={handleChanges}
-            placeholder="Director"
-            />
+        <input
+          type="number"
+          name="metascore"
+          placeholder="Metascore"
+          onChange={changeHandler}
+          value={update.metascore}
+        />
+        <div className="baseline" />
 
-            <input
-            type="number"
-            name="metascore"
-            value={update.metascore}
-            onChange={handleChanges}
-            placeholder="Metascore"
-            />
+        <input
+          type="text"
+          name="stars"
+          placeholder="Stars"
+          onChange={changeHandler}
+          value={update.stars}
+        />
+        <div className="baseline" />
 
-            <input
-            type="text"
-            name="stars"
-            value={update.stars}
-           onChange={handleChanges}
-            placeholder="Stars"
-            />
+        <button>Update Movie</button>
+      </form>
+    </div>
+  );
+};
 
-            <h4>Stars</h4>
-            {console.log(update.director)}
-            {/* <button onClick={e => {
-                //console.log(update.stars);
-                // e.preventDefault()
-                // setUpdate({...update, stars: [...update.stars, starHandle]})
-                // setStarHandle('')
-            }}>Add Stars</button>
-            {/* {update.stars.map((item,index)=> {
-                return <p key={index}>{item}</p>
-            })} */} 
-
-            <button type="submit">Update</button>
-        </form>
-    )
-}
 export default UpdateMovie;
